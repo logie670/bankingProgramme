@@ -19,9 +19,11 @@ public class BankForm extends javax.swing.JFrame {
     Timer timer;
     TimerTask task;
     int month = 1;
-    Transaction[] transList  = new Transaction[100];
+    
     int tranCount = 0;
     int rowCount = 0;
+    String[]errorList;
+    int errorCount=0;
     /**
      * Creates new form BankForm
      */
@@ -60,7 +62,7 @@ public class BankForm extends javax.swing.JFrame {
         jLabel20 = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
-        lblBalance = new javax.swing.JLabel();
+        lblTotBalance = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         lblMonth = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
@@ -69,7 +71,8 @@ public class BankForm extends javax.swing.JFrame {
         jLabel19 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblTransaction = new javax.swing.JTable();
-        lblList = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        txtErrorList = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -155,6 +158,11 @@ public class BankForm extends javax.swing.JFrame {
         jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.Y_AXIS));
 
         btnStopSim.setText("Stop Simulation");
+        btnStopSim.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStopSimActionPerformed(evt);
+            }
+        });
         jPanel3.add(btnStopSim);
 
         btnStartSim.setText("Start Simulation");
@@ -181,7 +189,7 @@ public class BankForm extends javax.swing.JFrame {
             jpControlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpControlPanelLayout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 185, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 334, Short.MAX_VALUE)
                 .addComponent(lbltest)
                 .addGap(108, 108, 108)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -199,7 +207,7 @@ public class BankForm extends javax.swing.JFrame {
                     .addGroup(jpControlPanelLayout.createSequentialGroup()
                         .addGap(131, 131, 131)
                         .addComponent(lbltest)))
-                .addContainerGap(71, Short.MAX_VALUE))
+                .addContainerGap(74, Short.MAX_VALUE))
         );
 
         jPanel1.add(jpControlPanel);
@@ -210,7 +218,7 @@ public class BankForm extends javax.swing.JFrame {
 
         jLabel21.setText("Messages");
 
-        lblBalance.setText("0.00");
+        lblTotBalance.setText("0.00");
 
         jLabel17.setText("Account Balance:");
 
@@ -238,7 +246,7 @@ public class BankForm extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(lblBalance)
+                        .addComponent(lblTotBalance)
                         .addComponent(lblTotDeposit))
                     .addComponent(lblTotWithdrawn))
                 .addGap(0, 115, Short.MAX_VALUE))
@@ -250,7 +258,7 @@ public class BankForm extends javax.swing.JFrame {
                 .addGap(24, 24, 24)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel17)
-                    .addComponent(lblBalance))
+                    .addComponent(lblTotBalance))
                 .addGap(30, 30, 30)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel18)
@@ -259,7 +267,7 @@ public class BankForm extends javax.swing.JFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel19)
                     .addComponent(lblTotDeposit))
-                .addGap(0, 119, Short.MAX_VALUE))
+                .addGap(0, 116, Short.MAX_VALUE))
         );
 
         tblTransaction.setModel(new javax.swing.table.DefaultTableModel(
@@ -281,7 +289,9 @@ public class BankForm extends javax.swing.JFrame {
         tblTransaction.setRequestFocusEnabled(false);
         jScrollPane2.setViewportView(tblTransaction);
 
-        lblList.setText("jLabel5");
+        txtErrorList.setColumns(20);
+        txtErrorList.setRows(5);
+        jScrollPane3.setViewportView(txtErrorList);
 
         javax.swing.GroupLayout jpDrawingPanelLayout = new javax.swing.GroupLayout(jpDrawingPanel);
         jpDrawingPanel.setLayout(jpDrawingPanelLayout);
@@ -289,35 +299,31 @@ public class BankForm extends javax.swing.JFrame {
             jpDrawingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpDrawingPanelLayout.createSequentialGroup()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(83, 83, 83)
-                .addComponent(lblList)
-                .addGap(23, 23, 23)
                 .addGroup(jpDrawingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jpDrawingPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel20)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 224, Short.MAX_VALUE)
-                        .addComponent(jLabel21)
-                        .addGap(148, 148, 148))
-                    .addGroup(jpDrawingPanelLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(32, 32, 32)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addGap(33, 33, 33)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(jpDrawingPanelLayout.createSequentialGroup()
+                        .addGap(176, 176, 176)
+                        .addComponent(jLabel20)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel21)
+                        .addGap(189, 189, 189))))
         );
         jpDrawingPanelLayout.setVerticalGroup(
             jpDrawingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpDrawingPanelLayout.createSequentialGroup()
-                .addGroup(jpDrawingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel20)
-                    .addComponent(jLabel21))
                 .addGroup(jpDrawingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jpDrawingPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addContainerGap())
-                    .addGroup(jpDrawingPanelLayout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addComponent(lblList)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addComponent(jLabel21)
+                    .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jpDrawingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3))
+                .addContainerGap())
             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
@@ -329,7 +335,7 @@ public class BankForm extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 974, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1123, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -343,9 +349,27 @@ public class BankForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         String fName = txtFirstName.getText();
         String lName = txtLastName.getText();
-        String bal = txtInitBalance.getText();
+        String bal = txtInitBalance.getText();       
         int init = Integer.parseInt(bal);
-        account = new Account(fName, lName, init);
+        int accountType = cmbAccountType.getSelectedIndex();
+        if(accountType ==0)
+        {
+            account = new SavingsAccount(fName, lName, init);
+            account.transaction(1, tranCount, month);
+            printTran(tranCount);
+            tranCount++;
+            month++;
+        }
+        
+        if(accountType==1)
+        {
+            account = new CurrentAccount(fName, lName, init);
+            account.transaction(1, tranCount, month);
+            printTran(tranCount);
+            tranCount++;
+            month++;
+        }
+        
         
         
         
@@ -362,25 +386,38 @@ public class BankForm extends javax.swing.JFrame {
 
     private void btnStartSimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartSimActionPerformed
         // TODO add your handling code here:
-        
         task = new TimerTask() {
         public void run() {
             
             
-            lblMonth.setText("Month "+month);
-            transaction(randNum(),tranCount);
-            printTran(tranCount, rowCount);
+            lblMonth.setText("Month "+ month);
+            account.transaction(randNum(),tranCount, month);
+            printTran(tranCount);
+            printError(account.getMessage());
+            lblTotBalance.setText(Integer.toString(account.getBalance()));
+            lblTotDeposit.setText(Integer.toString(account.getTotDeposit()));
+            lblTotWithdrawn.setText(Integer.toString(account.getTotWithdraw()));
             tranCount ++;
-            rowCount++;
             month++;
         }
     };
      timer = new Timer();
      timer.schedule(task, 5000, 5000);
 
-        
+    
         
     }//GEN-LAST:event_btnStartSimActionPerformed
+
+    private void btnStopSimActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopSimActionPerformed
+        // TODO add your handling code here:
+        timer.cancel();
+        timer.purge();
+        
+         GraphOutput displayGraph = new GraphOutput();
+         displayGraph.setSize(20, 20);
+         displayGraph.setVisible(true);
+        
+    }//GEN-LAST:event_btnStopSimActionPerformed
 
     /**
      * @param args the command line arguments
@@ -415,6 +452,8 @@ public class BankForm extends javax.swing.JFrame {
                 new BankForm().setVisible(true);
             }
         });
+        
+       
     }
     
     public int randNum(){
@@ -425,37 +464,31 @@ public class BankForm extends javax.swing.JFrame {
         return num;                    
     }
     
-    public void transaction(int rand, int count)
+    public void printTran(int count)                        
     {
-        Random random = new Random();
-        int num = random.nextInt(1000)+1;
-        String inOrOut="";
-        if (rand==1)
-        {
-            account.setBalance(account.getBalance()+num);
-            inOrOut="In";
-        }
-        else if(rand==2)
-        {
-            account.setBalance(account.getBalance()-num);
-            inOrOut="Out";
-        }
         
-        transList[count] = new Transaction(lblMonth.getText(), inOrOut, num, account.getBalance());
-                                                                                                              
-    }
-    
-    public void printTran(int count, int rowCount)                        
-    {
-        Object[] row = {transList[count].getMonth(), transList[count].getInOrOut(), transList[count].getAmount(), transList[count].getBalance()};
+        Object[] row = {"Month "+account.getTransaction()[count].getMonth(), account.getTransaction()[count].getInOrOut(), account.getTransaction()[count].getAmount(), account.getTransaction()[count].getBalance()};
         DefaultTableModel model = (DefaultTableModel) tblTransaction.getModel();
         model.addRow(row);
-        /*
-        tblTransaction.getModel().setValueAt(transList[count].getMonth(), rowCount, 0 );
-        tblTransaction.getModel().setValueAt(transList[count].getAmount(), rowCount, 2 );
-        tblTransaction.getModel().setValueAt(transList[count].getBalance(), rowCount, 3 );
-*/
     }
+    
+    public void printError(String message)
+    {
+        if (message !=null)
+        {
+            txtErrorList.append("Month "+month+ "   "+message+"\n");
+        }
+        else
+        {
+            txtErrorList.append("");
+        }
+            
+        
+
+                                             
+    }
+    
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCreate;
@@ -478,15 +511,16 @@ public class BankForm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JPanel jpControlPanel;
     private javax.swing.JPanel jpDrawingPanel;
-    private javax.swing.JLabel lblBalance;
-    private javax.swing.JLabel lblList;
     private javax.swing.JLabel lblMonth;
+    private javax.swing.JLabel lblTotBalance;
     private javax.swing.JLabel lblTotDeposit;
     private javax.swing.JLabel lblTotWithdrawn;
     private javax.swing.JLabel lbltest;
     private javax.swing.JTable tblTransaction;
+    private javax.swing.JTextArea txtErrorList;
     private javax.swing.JTextField txtFirstName;
     private javax.swing.JTextField txtInitBalance;
     private javax.swing.JTextField txtLastName;
